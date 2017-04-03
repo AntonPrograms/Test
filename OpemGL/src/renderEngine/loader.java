@@ -16,11 +16,14 @@ public class loader {
 	private List<Integer> vaos = new ArrayList<Integer>();
 	private List<Integer> vbos = new ArrayList<Integer>();
 	
-	public rawModel loadToVAO(float[] positions){
+	public rawModel loadToVAO(float[] positions, int[] indices){
 		int vaoID = createVAO();
+		
+		bindIndicesBuffer(indices);
+		
 		storeDataInAttributeList(0, positions);
 		unbindVAO();
-		return new rawModel(vaoID, positions.length/3);
+		return new rawModel(vaoID, indices.length);
 		
 		
 	}
@@ -34,14 +37,25 @@ public class loader {
 		}
 	}
 	
-	private void bindIndicesBuffer(float[] indeces){
+	private void bindIndicesBuffer(int[] indeces){
 		int vboID  =  GL15.glGenBuffers();
 		vbos.add(vboID);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vboID);
 		
+		IntBuffer buffer = storeDataIntBuffer(indeces);
+		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
+		
 	}
 	
-	private IntBuffer sotreDataIntBuffer(){
+	private IntBuffer storeDataIntBuffer(int[] data){
+		
+		IntBuffer buffer = BufferUtils.createIntBuffer(data.length);
+		buffer.put(data);
+		buffer.flip();
+	
+		
+		
+		return buffer;
 		
 	}
 	
